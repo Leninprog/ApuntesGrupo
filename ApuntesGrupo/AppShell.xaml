@@ -21,4 +21,11 @@
         ContentTemplate="{DataTemplate views:AboutPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Recordatorios" Icon="icon_reminder.png">
+        <ShellContent
+        Title="Recordatorios"
+        ContentTemplate="{DataTemplate views:RecordatoriosPage}" />
+    </FlyoutItem>
+
+
 </Shell>
