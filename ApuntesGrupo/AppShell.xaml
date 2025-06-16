@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="ApuntesGrupo.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:ApuntesGrupo"
+    xmlns:views ="clr-namespace:ApuntesGrupo.Views"
+    Shell.FlyoutBehavior="Flyout"
+    Title="ApuntesGrupo">
+
+    <FlyoutItem Title="Notas" Icon="icon_notes.png">
+        <ShellContent
+        Title="Notas"
+        ContentTemplate="{DataTemplate views:AllNotesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="About" Icon="icon_about.png">
+        <ShellContent
+        Title="About"
+        ContentTemplate="{DataTemplate views:AboutPage}" />
+    </FlyoutItem>
+
+</Shell>
