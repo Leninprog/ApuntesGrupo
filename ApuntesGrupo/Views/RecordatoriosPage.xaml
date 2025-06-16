@@ -3,31 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ApuntesGrupo.Views.RecordatoriosPage"
              xmlns:vm="clr-namespace:ApuntesGrupo.ViewModels"
+             x:Name="RecordatoriosContentPage"
              Title="Recordatorios">
 
     <ContentPage.BindingContext>
         <vm:RecordatoriosViewModel />
     </ContentPage.BindingContext>
 
+    <ScrollView>
+        <StackLayout Padding="10" Spacing="10">
 
-    <StackLayout Padding="10">
-        <Button Text="Agregar Recordatorio" Command="{Binding AgregarCommand}" />
+            <Entry Placeholder="Texto del recordatorio"
+                   Text="{Binding NuevoTexto}" />
 
-        <CollectionView ItemsSource="{Binding Recordatorios}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame BorderColor="LightGray" Padding="10" Margin="5">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Texto}" FontAttributes="Bold" />
-                            <Label Text="{Binding FechaHora}" />
-                            <Label Text="{Binding Activo}" />
-                            <Button Text="Eliminar"
-                                    Command="{Binding BindingContext.EliminarCommand, Source={x:Reference Name=RecordatoriosPage}}"
-                                    CommandParameter="{Binding .}" />
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </StackLayout>
+            <TimePicker Time="{Binding NuevaHora}" />
+
+            <Switch IsToggled="{Binding NuevoActivo}" />
+
+            <Button Text="Agregar Recordatorio"
+                    Command="{Binding AgregarCommand}" />
+
+            <Button Text="Eliminar"
+                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EliminarCommand}"
+                     CommandParameter="{Binding .}" />
+
+
+            <CollectionView ItemsSource="{Binding Recordatorios}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray" Padding="10" Margin="5">
+                            <StackLayout>
+                                <Label Text="{Binding Texto}" FontAttributes="Bold" />
+                                <Label Text="{Binding FechaHora}" />
+                                <Label Text="{Binding Activo}" />
+                                <Button Text="Eliminar"
+                                        Command="{Binding BindingContext.EliminarCommand, Source={x:Reference Name=RecordatoriosPage}}"
+                                        CommandParameter="{Binding .}" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

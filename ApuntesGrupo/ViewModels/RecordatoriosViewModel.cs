@@ -2,40 +2,90 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text.Json;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using ApuntesGrupo.Models;
 
 namespace ApuntesGrupo.ViewModels;
 
-
 public class RecordatoriosViewModel : INotifyPropertyChanged
 {
+    private string _nuevoTexto = "";
+    public string NuevoTexto
+    {
+        get => _nuevoTexto;
+        set
+        {
+            if (_nuevoTexto != value)
+            {
+                _nuevoTexto = value;
+                OnPropertyChanged(nameof(NuevoTexto));
+            }
+        }
+    }
+
+    private TimeSpan _nuevaHora = DateTime.Now.TimeOfDay;
+    public TimeSpan NuevaHora
+    {
+        get => _nuevaHora;
+        set
+        {
+            if (_nuevaHora != value)
+            {
+                _nuevaHora = value;
+                OnPropertyChanged(nameof(NuevaHora));
+            }
+        }
+    }
+
+    private bool _nuevoActivo = true;
+    public bool NuevoActivo
+    {
+        get => _nuevoActivo;
+        set
+        {
+            if (_nuevoActivo != value)
+            {
+                _nuevoActivo = value;
+                OnPropertyChanged(nameof(NuevoActivo));
+            }
+        }
+    }
+
     public ObservableCollection<Recordatorio> Recordatorios { get; set; } = new();
-    private string filePath = Path.Combine(FileSystem.AppDataDirectory, "recordatorios.json");
+    private readonly string filePath = Path.Combine(FileSystem.AppDataDirectory, "recordatorios.json");
 
     public Command AgregarCommand { get; }
     public Command<Recordatorio> EliminarCommand { get; }
 
     public RecordatoriosViewModel()
     {
-        AgregarCommand = new Command(() => Agregar());
-        EliminarCommand = new Command<Recordatorio>((r) => Eliminar(r));
+        AgregarCommand = new Command(Agregar);
+        EliminarCommand = new Command<Recordatorio>(Eliminar);
         Cargar();
     }
 
     public void Agregar()
     {
+        if (string.IsNullOrWhiteSpace(NuevoTexto))
+            return;
+
         var nuevo = new Recordatorio
         {
-            Texto = "Nuevo recordatorio",
-            FechaHora = TimeSpan.FromHours(12),
-            Activo = true
+            Texto = NuevoTexto,
+            FechaHora = NuevaHora,
+            Activo = NuevoActivo
         };
+
         Recordatorios.Add(nuevo);
         Guardar();
+
+        NuevoTexto = "";
+        NuevaHora = DateTime.Now.TimeOfDay;
+        NuevoActivo = true;
     }
 
     public void Eliminar(Recordatorio r)
@@ -69,4 +119,6 @@ public class RecordatoriosViewModel : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged(string propertyName) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
