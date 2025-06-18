@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:namespace="clr-namespace:ApuntesGrupo.ViewModels"
+             x:Class="ApuntesGrupo.Views.WeatherView"
+             Title="WeatherView">
+    
+    <ContentPage.BindingContext>
+        <namespace:WeatherViewModel />
+    </ContentPage.BindingContext>
+    
+    <VerticalStackLayout>
+        <Label 
+            x:Name="LabelTemperatura"
+            Text="{Binding WeatherDataInfo.Current.Temperature2m}"/>
+        <Label 
+            x:Name="LabelTemperaturaUnit"
+Text="{Binding WeatherDataInfo.CurrentUnits.Temperature2m}"/>
+        <Label 
+            x:Name="LabelHumidity"
+Text="{Binding WeatherDataInfo.Current.Temperature2m}"/>
+        <Label 
+            x:Name="LabelHumidityUnits"
+Text="{Binding WeatherDataInfo.CurrentUnits.Temperature2m}"/>
+
+    </VerticalStackLayout>
+</ContentPage>
