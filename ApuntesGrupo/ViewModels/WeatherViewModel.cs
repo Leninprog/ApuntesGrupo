@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using ApuntesGrupo.Repositories; // ✅ Agregado
 using static ApuntesGrupo.Models.WeatherModels;
 
 namespace ApuntesGrupo.ViewModels
@@ -29,10 +25,11 @@ namespace ApuntesGrupo.ViewModels
         {
             GetCurrentWeatherData();
         }
+
         public async void GetCurrentWeatherData()
         {
             WeatherRepository weatherRepository = new WeatherRepository();
-            WeatherDataInfo = await weatherRepository.GetWeatherDataAsync();
+            WeatherDataInfo = await weatherRepository.GetCurrentLocationWeatherData(); // ✅ Corregido
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

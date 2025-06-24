@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Intents;
+using Newtonsoft.Json;
 using static ApuntesGrupo.Models.WeatherModels;
 
 namespace ApuntesGrupo.Repositories
@@ -14,7 +14,7 @@ namespace ApuntesGrupo.Repositories
         public async Task<WeatherData> GetCurrentLocationWeatherData()
         {
             GeolocationRepository _geoRepository = new GeolocationRepository(); 
-            Location location = _geoRepository.GetCurrentLocationAsync();
+            Location location = await _geoRepository.GetCurrentLocationAsync();
             return await GetWeatherDataAsync(location.Latitude, location.Longitude);
         }
         public async Task<WeatherData> GetWeatherDataAsync(double latitude, double longitude)

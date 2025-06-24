@@ -34,16 +34,17 @@
                         <Frame BorderColor="LightGray" Padding="10" Margin="5">
                             <StackLayout>
                                 <Label Text="{Binding Texto}" FontAttributes="Bold" />
-                                <Label Text="{Binding FechaHora}" />
+                                <Label Text="{Binding FechaHora, StringFormat='{}{0:HH:mm}'}" />
                                 <Label Text="{Binding Activo}" />
                                 <Button Text="Eliminar"
-                                        Command="{Binding BindingContext.EliminarCommand, Source={x:Reference Name=RecordatoriosPage}}"
-                                        CommandParameter="{Binding .}" />
+                            Command="{Binding BindingContext.EliminarCommand, Source={x:Reference RecordatoriosContentPage}}"
+                            CommandParameter="{Binding .}" />
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
 
         </StackLayout>
     </ScrollView>

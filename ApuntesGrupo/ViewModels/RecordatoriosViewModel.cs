@@ -2,123 +2,142 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text.Json;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ApuntesGrupo.Models;
+using Microsoft.Maui.Storage;
+using System.Windows.Input;
 
-namespace ApuntesGrupo.ViewModels;
-
-public class RecordatoriosViewModel : INotifyPropertyChanged
+namespace ApuntesGrupo.ViewModels
 {
-    private string _nuevoTexto = "";
-    public string NuevoTexto
+    public class RecordatoriosViewModel : INotifyPropertyChanged
     {
-        get => _nuevoTexto;
-        set
+        private string _nuevoTexto = string.Empty;
+        public string NuevoTexto
         {
-            if (_nuevoTexto != value)
+            get => _nuevoTexto;
+            set
             {
-                _nuevoTexto = value;
-                OnPropertyChanged(nameof(NuevoTexto));
+                if (_nuevoTexto != value)
+                {
+                    _nuevoTexto = value;
+                    OnPropertyChanged(nameof(NuevoTexto));
+                }
             }
         }
-    }
 
-    private TimeSpan _nuevaHora = DateTime.Now.TimeOfDay;
-    public TimeSpan NuevaHora
-    {
-        get => _nuevaHora;
-        set
+        private TimeSpan _nuevaHora = DateTime.Now.TimeOfDay;
+        public TimeSpan NuevaHora
         {
-            if (_nuevaHora != value)
+            get => _nuevaHora;
+            set
             {
-                _nuevaHora = value;
-                OnPropertyChanged(nameof(NuevaHora));
+                if (_nuevaHora != value)
+                {
+                    _nuevaHora = value;
+                    OnPropertyChanged(nameof(NuevaHora));
+                }
             }
         }
-    }
 
-    private bool _nuevoActivo = true;
-    public bool NuevoActivo
-    {
-        get => _nuevoActivo;
-        set
+        private bool _nuevoActivo = true;
+        public bool NuevoActivo
         {
-            if (_nuevoActivo != value)
+            get => _nuevoActivo;
+            set
             {
-                _nuevoActivo = value;
-                OnPropertyChanged(nameof(NuevoActivo));
+                if (_nuevoActivo != value)
+                {
+                    _nuevoActivo = value;
+                    OnPropertyChanged(nameof(NuevoActivo));
+                }
             }
         }
-    }
 
-    public ObservableCollection<Recordatorio> Recordatorios { get; set; } = new();
-    private readonly string filePath = Path.Combine(FileSystem.AppDataDirectory, "recordatorios.json");
+        public ObservableCollection<Recordatorio> Recordatorios { get; set; } = new();
 
-    public Command AgregarCommand { get; }
-    public Command<Recordatorio> EliminarCommand { get; }
+        private readonly string filePath = Path.Combine(FileSystem.AppDataDirectory, "recordatorios.json");
 
-    public RecordatoriosViewModel()
-    {
-        AgregarCommand = new Command(Agregar);
-        EliminarCommand = new Command<Recordatorio>(Eliminar);
-        Cargar();
-    }
+        public ICommand AgregarCommand { get; }
+        public ICommand EliminarCommand { get; }
 
-    public void Agregar()
-    {
-        if (string.IsNullOrWhiteSpace(NuevoTexto))
-            return;
-
-        var nuevo = new Recordatorio
+        public RecordatoriosViewModel()
         {
-            Texto = NuevoTexto,
-            FechaHora = NuevaHora,
-            Activo = NuevoActivo
-        };
+            AgregarCommand = new Command(Agregar);
+            EliminarCommand = new Command<Recordatorio>(Eliminar);
+            Cargar();
+        }
 
-        Recordatorios.Add(nuevo);
-        Guardar();
-
-        NuevoTexto = "";
-        NuevaHora = DateTime.Now.TimeOfDay;
-        NuevoActivo = true;
-    }
-
-    public void Eliminar(Recordatorio r)
-    {
-        if (Recordatorios.Contains(r))
+        public void Agregar()
         {
-            Recordatorios.Remove(r);
+            if (string.IsNullOrWhiteSpace(NuevoTexto))
+                return;
+
+            var nuevo = new Recordatorio
+            {
+                Texto = NuevoTexto,
+                FechaHora = DateTime.Today.Add(NuevaHora),
+                Activo = NuevoActivo
+            };
+
+            Recordatorios.Add(nuevo);
             Guardar();
-        }
-    }
 
-    public void Cargar()
-    {
-        if (File.Exists(filePath))
+            NuevoTexto = string.Empty;
+            NuevaHora = DateTime.Now.TimeOfDay;
+            NuevoActivo = true;
+        }
+
+        public void Eliminar(Recordatorio r)
         {
-            var json = File.ReadAllText(filePath);
-            var lista = JsonSerializer.Deserialize<List<Recordatorio>>(json);
-            if (lista != null)
+            if (Recordatorios.Contains(r))
             {
-                Recordatorios.Clear();
-                foreach (var r in lista)
-                    Recordatorios.Add(r);
+                Recordatorios.Remove(r);
+                Guardar();
             }
         }
-    }
 
-    public void Guardar()
-    {
-        var json = JsonSerializer.Serialize(Recordatorios);
-        File.WriteAllText(filePath, json);
-    }
+        public void Cargar()
+        {
+            if (File.Exists(filePath))
+            {
+                var json = File.ReadAllText(filePath);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
+                    AllowTrailingCommas = true
+                };
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged(string propertyName) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                try
+                {
+                    var lista = JsonSerializer.Deserialize<List<Recordatorio>>(json, options);
+                    if (lista != null)
+                    {
+                        Recordatorios.Clear();
+                        foreach (var r in lista)
+                            Recordatorios.Add(r);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al leer JSON: {ex.Message}");
+                    File.Delete(filePath); 
+                }
+            }
+        }
+
+
+        public void Guardar()
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(Recordatorios, options);
+            File.WriteAllText(filePath, json);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
