@@ -14,21 +14,25 @@
 
             <Label Text="Información del clima" FontSize="24" HorizontalOptions="Center" />
 
-            <Button Text="Cargar clima" Command="{Binding CargarClimaCommand}" />
+            <Button Text="Cargar clima"
+                    BackgroundColor="#b39ddb"
+                    TextColor="Black"
+                    CornerRadius="10"
+                    Command="{Binding CargarClimaCommand}" />
 
             <Frame Padding="15" BorderColor="LightGray">
                 <StackLayout>
                     <Label Text="Hora:" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherData.Current.Time}" />
+                    <Label Text="{Binding WeatherDataInfo.Current.Time}" />
 
                     <Label Text="Temperatura (°C):" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherData.Current.Temperature2m}" />
+                    <Label Text="{Binding WeatherDataInfo.Current.Temperature2m}" />
 
                     <Label Text="Humedad (%):" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherData.Current.RelativeHumidity2m}" />
+                    <Label Text="{Binding WeatherDataInfo.Current.RelativeHumidity2m}" />
 
                     <Label Text="Lluvia (mm):" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherData.Current.Rain}" />
+                    <Label Text="{Binding WeatherDataInfo.Current.Rain}" />
                 </StackLayout>
             </Frame>
 

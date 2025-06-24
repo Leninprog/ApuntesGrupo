@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ApuntesGrupo.Repositories; // ✅ Agregado
-using static ApuntesGrupo.Models.WeatherModels;
+using System.Windows.Input;
+using ApuntesGrupo.Repositories;
+using ApuntesGrupo.Models;
 
 namespace ApuntesGrupo.ViewModels
 {
-    class WeatherViewModel : INotifyPropertyChanged
+    public class WeatherViewModel : INotifyPropertyChanged
     {
         private WeatherData _weatherData = new WeatherData();
         public WeatherData WeatherDataInfo
@@ -21,19 +22,22 @@ namespace ApuntesGrupo.ViewModels
             }
         }
 
+        public ICommand CargarClimaCommand { get; }
+
         public WeatherViewModel()
         {
-            GetCurrentWeatherData();
+            CargarClimaCommand = new Command(async () => await GetCurrentWeatherData());
+            GetCurrentWeatherData(); // también carga automáticamente al abrir
         }
 
-        public async void GetCurrentWeatherData()
+        public async Task GetCurrentWeatherData()
         {
             WeatherRepository weatherRepository = new WeatherRepository();
-            WeatherDataInfo = await weatherRepository.GetCurrentLocationWeatherData(); // ✅ Corregido
+            WeatherDataInfo = await weatherRepository.GetCurrentLocationWeatherData();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string name = "") =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

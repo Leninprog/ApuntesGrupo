@@ -27,5 +27,10 @@
         ContentTemplate="{DataTemplate views:RecordatoriosPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title=" Clima" Icon="icon_clima.png">
+        <ShellContent
+        Title="Clima"
+        ContentTemplate="{DataTemplate views:WeatherView}"/>
+    </FlyoutItem>
 
 </Shell>
