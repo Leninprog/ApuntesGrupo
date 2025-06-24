@@ -1,58 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Text.Json;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using ApuntesGrupo.Models;
 using Microsoft.Maui.Storage;
-using System.Windows.Input;
+using Newtonsoft.Json;
 
 namespace ApuntesGrupo.ViewModels
 {
     public class RecordatoriosViewModel : INotifyPropertyChanged
     {
         private string _nuevoTexto = string.Empty;
+        private TimeSpan _nuevaHora = TimeSpan.Zero;
+        private bool _nuevoActivo = true;
+
         public string NuevoTexto
         {
             get => _nuevoTexto;
-            set
-            {
-                if (_nuevoTexto != value)
-                {
-                    _nuevoTexto = value;
-                    OnPropertyChanged(nameof(NuevoTexto));
-                }
-            }
+            set { _nuevoTexto = value; OnPropertyChanged(); }
         }
 
-        private TimeSpan _nuevaHora = DateTime.Now.TimeOfDay;
         public TimeSpan NuevaHora
         {
             get => _nuevaHora;
-            set
-            {
-                if (_nuevaHora != value)
-                {
-                    _nuevaHora = value;
-                    OnPropertyChanged(nameof(NuevaHora));
-                }
-            }
+            set { _nuevaHora = value; OnPropertyChanged(); }
         }
 
-        private bool _nuevoActivo = true;
         public bool NuevoActivo
         {
             get => _nuevoActivo;
-            set
-            {
-                if (_nuevoActivo != value)
-                {
-                    _nuevoActivo = value;
-                    OnPropertyChanged(nameof(NuevoActivo));
-                }
-            }
+            set { _nuevoActivo = value; OnPropertyChanged(); }
         }
 
         public ObservableCollection<Recordatorio> Recordatorios { get; set; } = new();
@@ -74,18 +52,19 @@ namespace ApuntesGrupo.ViewModels
             if (string.IsNullOrWhiteSpace(NuevoTexto))
                 return;
 
-            var nuevo = new Recordatorio
+            var recordatorio = new Recordatorio
             {
                 Texto = NuevoTexto,
-                FechaHora = DateTime.Today.Add(NuevaHora),
+                FechaHora = NuevaHora,
                 Activo = NuevoActivo
             };
 
-            Recordatorios.Add(nuevo);
+            Recordatorios.Add(recordatorio);
             Guardar();
 
+            // Reset form
             NuevoTexto = string.Empty;
-            NuevaHora = DateTime.Now.TimeOfDay;
+            NuevaHora = TimeSpan.Zero;
             NuevoActivo = true;
         }
 
@@ -103,41 +82,24 @@ namespace ApuntesGrupo.ViewModels
             if (File.Exists(filePath))
             {
                 var json = File.ReadAllText(filePath);
-                var options = new JsonSerializerOptions
+                var lista = JsonConvert.DeserializeObject<List<Recordatorio>>(json);
+                if (lista != null)
                 {
-                    PropertyNameCaseInsensitive = true,
-                    Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
-                    AllowTrailingCommas = true
-                };
-
-                try
-                {
-                    var lista = JsonSerializer.Deserialize<List<Recordatorio>>(json, options);
-                    if (lista != null)
-                    {
-                        Recordatorios.Clear();
-                        foreach (var r in lista)
-                            Recordatorios.Add(r);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error al leer JSON: {ex.Message}");
-                    File.Delete(filePath); 
+                    Recordatorios.Clear();
+                    foreach (var r in lista)
+                        Recordatorios.Add(r);
                 }
             }
         }
 
-
         public void Guardar()
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(Recordatorios, options);
+            var json = JsonConvert.SerializeObject(Recordatorios, Formatting.Indented);
             File.WriteAllText(filePath, json);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void OnPropertyChanged([CallerMemberName] string propName = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
     }
 }
