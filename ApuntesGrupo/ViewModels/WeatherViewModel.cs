@@ -19,7 +19,7 @@ namespace ApuntesGrupo.ViewModels
             }
         }
 
-        private bool _isLoading;
+        private bool _isLoading = true;
         public bool IsLoading
         {
             get => _isLoading;
@@ -33,10 +33,16 @@ namespace ApuntesGrupo.ViewModels
         public ICommand CargarClimaCommand { get; }
         private readonly WeatherRepository _weatherRepository;
 
-        public WeatherViewModel()
+        public WeatherViewModel(WeatherRepository weatherRepository)
         {
+            _weatherRepository = weatherRepository ?? throw new ArgumentNullException(nameof(weatherRepository));
+
             CargarClimaCommand = new Command(async () => await GetCurrentWeatherData());
             GetCurrentWeatherData();
+        }
+
+        public WeatherViewModel() : this(new WeatherRepository())
+        {
         }
 
         public async Task GetCurrentWeatherData()
