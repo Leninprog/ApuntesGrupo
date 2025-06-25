@@ -10,17 +10,14 @@
     </ContentPage.BindingContext>
 
     <ScrollView>
-        <StackLayout Padding="20" Spacing="15">
+        <StackLayout>
+            <Label Text="Cargando datos del clima..."
+           IsVisible="{Binding IsLoading}"
+           FontAttributes="Italic"
+           TextColor="Gray"
+           HorizontalOptions="Center" />
 
-            <Label Text="Información del clima" FontSize="24" HorizontalOptions="Center" />
-
-            <Button Text="Cargar clima"
-                    BackgroundColor="#b39ddb"
-                    TextColor="Black"
-                    CornerRadius="10"
-                    Command="{Binding CargarClimaCommand}" />
-
-            <Frame Padding="15" BorderColor="LightGray">
+            <Frame Padding="15" BorderColor="LightGray" IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
                 <StackLayout>
                     <Label Text="Hora:" FontAttributes="Bold" />
                     <Label Text="{Binding WeatherDataInfo.Current.Time}" />
@@ -35,7 +32,6 @@
                     <Label Text="{Binding WeatherDataInfo.Current.Rain}" />
                 </StackLayout>
             </Frame>
-
         </StackLayout>
     </ScrollView>
 </ContentPage>

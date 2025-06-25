@@ -14,26 +14,48 @@ namespace ApuntesGrupo.ViewModels
             get => _weatherData;
             set
             {
-                if (_weatherData != value)
-                {
-                    _weatherData = value;
-                    OnPropertyChanged();
-                }
+                _weatherData = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged();
             }
         }
 
         public ICommand CargarClimaCommand { get; }
+        private readonly WeatherRepository _weatherRepository;
 
         public WeatherViewModel()
         {
             CargarClimaCommand = new Command(async () => await GetCurrentWeatherData());
-            GetCurrentWeatherData(); // también carga automáticamente al abrir
+            GetCurrentWeatherData();
         }
 
         public async Task GetCurrentWeatherData()
         {
-            WeatherRepository weatherRepository = new WeatherRepository();
-            WeatherDataInfo = await weatherRepository.GetCurrentLocationWeatherData();
+            try
+            {
+                IsLoading = true;
+                WeatherDataInfo = new WeatherData();
+
+                WeatherDataInfo = await _weatherRepository.GetCurrentLocationWeatherData();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener clima: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
