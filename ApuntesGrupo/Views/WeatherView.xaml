@@ -3,39 +3,222 @@
              xmlns:vm="clr-namespace:ApuntesGrupo.ViewModels"
              xmlns:converters="clr-namespace:ApuntesGrupo.Converters"
              x:Class="ApuntesGrupo.Views.WeatherView"
-             Title="Clima actual">
+             Title="Clima actual"
+             BackgroundColor="#F5F7FA">
 
     <ScrollView>
-        <StackLayout>
+        <StackLayout Padding="20" Spacing="20">
 
-            <Button Text="Cargar clima"
-                    Command="{Binding CargarClimaCommand}"
-                    HorizontalOptions="Center"
-                    Margin="0,10" />
+            <!-- Header with Location and Refresh Button -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
+                <StackLayout Grid.Column="0" Spacing="5">
+                    <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Label Text="📍" FontSize="16" VerticalOptions="Center" />
+                        <Label Text="UBICACIÓN ACTUAL" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="#6B7280"
+                               VerticalOptions="Center" />
+                    </StackLayout>
+                    <Label Text="{Binding WeatherDataInfo.Current.Time, StringFormat='Actualizado: {0}'}"
+                           FontSize="12"
+                           TextColor="#9CA3AF" />
+                </StackLayout>
 
-            <Label Text="Cargando datos del clima..."
-                   IsVisible="{Binding IsLoading}"
-                   FontAttributes="Italic"
-                   TextColor="Gray"
-                   HorizontalOptions="Center" />
+                <!-- Modern Refresh Button -->
+                <Button Grid.Column="1"
+                        Text="🔄"
+                        Command="{Binding CargarClimaCommand}"
+                        BackgroundColor="White"
+                        TextColor="#6366F1"
+                        FontSize="18"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        CornerRadius="25"
+                        BorderWidth="1"
+                        BorderColor="#E5E7EB"
+                        Shadow="{Shadow Brush=Gray, Offset='2,2', Radius=8, Opacity=0.1}" />
+            </Grid>
 
-            <Frame Padding="15"
-                   BorderColor="LightGray"
-                   IsVisible="{Binding IsLoading, Converter={converters:InverseBoolConverter}}">
-                <StackLayout>
-                    <Label Text="Hora:" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherDataInfo.Current.Time}" />
-
-                    <Label Text="Temperatura (°C):" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherDataInfo.Current.Temperature2m}" />
-
-                    <Label Text="Humedad (%):" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherDataInfo.Current.RelativeHumidity2m}" />
-
-                    <Label Text="Lluvia (mm):" FontAttributes="Bold" />
-                    <Label Text="{Binding WeatherDataInfo.Current.Rain}" />
+            <!-- Loading Card -->
+            <Frame IsVisible="{Binding IsLoading}"
+                   BackgroundColor="White"
+                   CornerRadius="20"
+                   Padding="40"
+                   HasShadow="False"
+                   Shadow="{Shadow Brush=Gray, Offset='0,4', Radius=12, Opacity=0.1}">
+                <StackLayout HorizontalOptions="Center" Spacing="15">
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       Color="#6366F1"
+                                       WidthRequest="40"
+                                       HeightRequest="40" />
+                    <Label Text="Cargando datos del clima..."
+                           FontSize="16"
+                           TextColor="#6B7280"
+                           HorizontalOptions="Center" />
                 </StackLayout>
             </Frame>
+
+            <!-- Main Weather Card -->
+            <Frame IsVisible="{Binding IsLoading, Converter={converters:InverseBoolConverter}}"
+                   CornerRadius="25"
+                   Padding="0"
+                   HasShadow="False"
+                   Shadow="{Shadow Brush=Gray, Offset='0,8', Radius=20, Opacity=0.15}">
+
+                <Grid RowDefinitions="*">
+                    <!-- Dynamic Background based on weather -->
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#FEF3C7" Offset="0.0" />
+                                <GradientStop Color="#FCD34D" Offset="0.7" />
+                                <GradientStop Color="#F59E0B" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+
+                    <!-- Weather Content -->
+                    <StackLayout Padding="30" Spacing="20">
+
+                        <!-- Weather Icon -->
+                        <Grid HorizontalOptions="Center" WidthRequest="100" HeightRequest="100" Margin="0,20,0,0">
+                            <!-- Sun with modern design -->
+                            <Ellipse Fill="#FBBF24" 
+                                     WidthRequest="60" 
+                                     HeightRequest="60"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="Center" />
+
+                            <!-- Sun rays with modern style -->
+                            <Grid>
+                                <!-- Main rays -->
+                                <Rectangle Fill="#F59E0B" WidthRequest="3" HeightRequest="15" 
+                                           HorizontalOptions="Center" VerticalOptions="Start" />
+                                <Rectangle Fill="#F59E0B" WidthRequest="3" HeightRequest="15" 
+                                           HorizontalOptions="Center" VerticalOptions="End" />
+                                <Rectangle Fill="#F59E0B" WidthRequest="15" HeightRequest="3" 
+                                           HorizontalOptions="Start" VerticalOptions="Center" />
+                                <Rectangle Fill="#F59E0B" WidthRequest="15" HeightRequest="3" 
+                                           HorizontalOptions="End" VerticalOptions="Center" />
+
+                                <!-- Diagonal rays -->
+                                <Rectangle Fill="#F59E0B" WidthRequest="3" HeightRequest="12" 
+                                           HorizontalOptions="Start" VerticalOptions="Start"
+                                           Margin="12,12,0,0" Rotation="45" />
+                                <Rectangle Fill="#F59E0B" WidthRequest="3" HeightRequest="12" 
+                                           HorizontalOptions="End" VerticalOptions="Start"
+                                           Margin="0,12,12,0" Rotation="-45" />
+                                <Rectangle Fill="#F59E0B" WidthRequest="3" HeightRequest="12" 
+                                           HorizontalOptions="Start" VerticalOptions="End"
+                                           Margin="12,0,0,12" Rotation="-45" />
+                                <Rectangle Fill="#F59E0B" WidthRequest="3" HeightRequest="12" 
+                                           HorizontalOptions="End" VerticalOptions="End"
+                                           Margin="0,0,12,12" Rotation="45" />
+                            </Grid>
+                        </Grid>
+
+                        <!-- Temperature Display -->
+                        <StackLayout HorizontalOptions="Center" Spacing="5">
+                            <Label Text="{Binding WeatherDataInfo.Current.Temperature2m, StringFormat='{0:F0}°'}"
+                                   FontSize="72"
+                                   FontAttributes="Bold"
+                                   TextColor="#92400E"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Soleado"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#A16207"
+                                   HorizontalOptions="Center" />
+                            <Label Text="{Binding WeatherDataInfo.Current.Temperature2m, StringFormat='Sensación térmica {0:F0}°'}"
+                                   FontSize="14"
+                                   TextColor="#A16207"
+                                   Opacity="0.8"
+                                   HorizontalOptions="Center" />
+                        </StackLayout>
+                    </StackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Weather Details Cards -->
+            <Grid IsVisible="{Binding IsLoading, Converter={converters:InverseBoolConverter}}"
+                  ColumnDefinitions="*,*" 
+                  ColumnSpacing="15"
+                  RowDefinitions="Auto,Auto"
+                  RowSpacing="15">
+
+                <!-- Humidity Card -->
+                <Frame Grid.Column="0" Grid.Row="0"
+                       BackgroundColor="White"
+                       CornerRadius="15"
+                       Padding="20"
+                       HasShadow="False"
+                       Shadow="{Shadow Brush=Gray, Offset='0,2', Radius=8, Opacity=0.1}">
+                    <StackLayout Spacing="10">
+                        <Label Text="💧" FontSize="24" HorizontalOptions="Center" />
+                        <Label Text="Humedad" 
+                               FontSize="12" 
+                               TextColor="#6B7280"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding WeatherDataInfo.Current.RelativeHumidity2m, StringFormat='{0}%'}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"
+                               HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Rain Card -->
+                <Frame Grid.Column="1" Grid.Row="0"
+                       BackgroundColor="White"
+                       CornerRadius="15"
+                       Padding="20"
+                       HasShadow="False"
+                       Shadow="{Shadow Brush=Gray, Offset='0,2', Radius=8, Opacity=0.1}">
+                    <StackLayout Spacing="10">
+                        <Label Text="🌧️" FontSize="24" HorizontalOptions="Center" />
+                        <Label Text="Lluvia" 
+                               FontSize="12" 
+                               TextColor="#6B7280"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding WeatherDataInfo.Current.Rain, StringFormat='{0} mm'}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"
+                               HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Location Card -->
+                <Frame Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
+                       BackgroundColor="White"
+                       CornerRadius="15"
+                       Padding="20"
+                       HasShadow="False"
+                       Shadow="{Shadow Brush=Gray, Offset='0,2', Radius=8, Opacity=0.1}">
+                    <StackLayout Spacing="10">
+                        <Label Text="📍 Información de ubicación" 
+                               FontSize="14" 
+                               TextColor="#6B7280"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding WeatherDataInfo.Timezone, StringFormat='Zona horaria: {0}'}"
+                               FontSize="12"
+                               TextColor="#9CA3AF"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding WeatherDataInfo.Latitude, StringFormat='Lat: {0:F2}'}"
+                               FontSize="12"
+                               TextColor="#9CA3AF"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding WeatherDataInfo.Longitude, StringFormat='Lon: {0:F2}'}"
+                               FontSize="12"
+                               TextColor="#9CA3AF"
+                               HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
 
         </StackLayout>
     </ScrollView>
